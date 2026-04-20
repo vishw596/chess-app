@@ -54,8 +54,8 @@ authRouter.post("/signup", async (req: Request, res: Response) => {
             auth_provider: "EMAIL"
         }, process.env.JWT_SECRET as string);
 
-        res.cookie('auth_token', token, { maxAge: COOKIE_MAX_AGE, httpOnly: true });
-        res.json({ success: true, user: userDetails });
+        // res.cookie('auth_token', token, { maxAge: COOKIE_MAX_AGE, httpOnly: true });
+        res.json({ success: true, user: userDetails, token });
     } catch (error) {
         console.error("Signup error:", error);
         res.status(500).json({ success: false, message: "Server error" });
@@ -111,8 +111,8 @@ authRouter.post("/login", async (req: Request, res: Response) => {
             auth_provider: "EMAIL"
         }, process.env.JWT_SECRET as string);
 
-        res.cookie('auth_token', token, { maxAge: COOKIE_MAX_AGE, httpOnly: true });
-        res.json({ success: true, user: userDetails });
+        // res.cookie('auth_token', token, { maxAge: COOKIE_MAX_AGE, httpOnly: true});
+        res.json({ success: true, user: userDetails, token });
     } catch (error) {
         console.error("Login error:", error);
         res.status(500).json({ success: false, message: "Server error" });
@@ -130,7 +130,7 @@ authRouter.get("/refresh", authMiddleware, async (req: Request, res: Response) =
             }
         });
         const token = jwt.sign({ ...user }, process.env.JWT_SECRET as string)
-        res.cookie("auth_token", token, { maxAge: COOKIE_MAX_AGE, httpOnly: true })
+        // res.cookie("auth_token", token, { maxAge: COOKIE_MAX_AGE, httpOnly: true })
         res.json({
             success: true,
             token,
@@ -180,18 +180,19 @@ authRouter.get(
         console.log("inside callback function " + user);
 
         const token = jwt.sign({ ...user }, process.env.JWT_SECRET as string);
-        res.cookie("auth_token", token, { httpOnly: true, sameSite: "strict", maxAge: COOKIE_MAX_AGE });
-        res.redirect(process.env.AUTH_REDIRECT_URL as string);
+        // res.cookie("auth_token", token, { httpOnly: true, maxAge: COOKIE_MAX_AGE });
+        const redirectUrl = new URL(process.env.AUTH_REDIRECT_URL as string);
+        redirectUrl.searchParams.set("token", token);
+        res.redirect(redirectUrl.toString());
     }
 );
 
 authRouter.get("/logout", (req: Request, res: Response) => {
     try {
-        res.clearCookie("auth_token", {
-            httpOnly: true,
-            sameSite: "strict",
-            path: "/"
-        });
+        // res.clearCookie("auth_token", {
+        //     httpOnly: true,
+        //     path: "/"
+        // });
         res.status(200).json({msg:"Logged out successfully!"})
     } catch (error) {
         console.log(error);

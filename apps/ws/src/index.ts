@@ -8,8 +8,10 @@ const wss = new WebSocketServer({ port: 8080},() => console.log("Websocket serve
 const gameManager = new GameManager();
 wss.on("connection", (socket: WebSocket, request) => {
     console.log("Client connected");
-    const cookies = request.headers.cookie?.split("; ");
-    const token = cookies?.filter((x) => x.startsWith("auth_token"))[0]?.split("=")[1];
+    // const cookies = request.headers.cookie?.split("; ");
+    // const token = cookies?.filter((x) => x.startsWith("auth_token"))[0]?.split("=")[1];
+    const requestUrl = new URL(request.url ?? "", "ws://localhost");
+    const token = requestUrl.searchParams.get("token");
     const user = AuthUser(token as string, socket);
     // console.log(user);
     

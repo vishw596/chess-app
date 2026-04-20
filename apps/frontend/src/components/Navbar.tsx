@@ -1,9 +1,10 @@
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import { useSetRecoilState } from "recoil";
-import { BACKEND_URL, userAtom } from "../store/atoms/user";
+import { userAtom } from "../store/atoms/user";
 import { useUser } from "../store/hooks/useUser";
 import { Button } from "./Button";
+import { api } from "../lib/api";
+import { clearAuthToken } from "../lib/auth";
 
 export const Navbar = () => {
     const navigate = useNavigate();
@@ -12,7 +13,8 @@ export const Navbar = () => {
 
     const handleLogout = async () => {
         try {
-            await axios.get(`${BACKEND_URL}/auth/logout`, { withCredentials: true });
+            await api.get("/auth/logout");
+            clearAuthToken();
             setUser(null);
             navigate("/");
         } catch (error) {

@@ -3,18 +3,21 @@ import express, { Request, Response } from "express";
 import { authRouter } from "./routes/auth.js";
 import { profileRouter } from "./routes/profile.js";
 import "dotenv/config";
-import cookieParser from "cookie-parser";
 import passport from "passport";
 import { initPassport } from "./passport.js";
 import cors from "cors"
 const app = express();
 app.use(express.json());
-app.use(cookieParser());
+// app.use(cookieParser());
 console.log(process.env.ALLOWED_HOSTS);
+const allowedHosts = process.env.ALLOWED_HOSTS
+  ? process.env.ALLOWED_HOSTS.split(',')
+  : [];
+  console.log(allowedHosts);
 
 app.use(cors({
-    origin: "http://localhost:5173",
-    credentials: true
+    origin: allowedHosts,
+    // credentials: true
 }))
 app.use(passport.initialize())
 initPassport()

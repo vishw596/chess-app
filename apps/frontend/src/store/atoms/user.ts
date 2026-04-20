@@ -1,4 +1,6 @@
 import { atom, selector } from "recoil"
+import { api } from "../../lib/api";
+import { getAuthToken, setAuthToken } from "../../lib/auth";
 export interface User {
     id: string;
     name?: string | null;
@@ -9,22 +11,23 @@ export interface User {
     lastLogin?: string | null;
     token?: string;
 }
-export const BACKEND_URL = 'http://localhost:3000'
+
 export const userAtom = atom<User | null>({
     key: 'user',
     default: selector({
         key: "user/default",
         get: async () => {
             try {
-                const response = await fetch(`${BACKEND_URL}/auth/refresh`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    credentials: 'include',
-                });
-                if (response.ok) {
-                    const data = await response.json();
+                const token = getAuthToken();
+                if (!token) {
+                    return null;
+                }
+                const response = await api.get("/auth/refresh");
+                if (response.status === 200) {
+                    const data = response.data;
+                    if (data.token) {
+                        setAuthToken(data.token);
+                    }
                     return {
                         id: data.id,
                         name: data.name,

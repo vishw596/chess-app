@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { BACKEND_URL, userAtom } from "../store/atoms/user";
+import { userAtom } from "../store/atoms/user";
 import { useUser } from "../store/hooks/useUser";
 import { Button } from "../components/Button";
 import { Navbar } from "../components/Navbar";
 import { useSetRecoilState } from "recoil";
+import { api } from "../lib/api";
 
 type ProfileData = {
     id: string;
@@ -118,25 +119,16 @@ export const Profile = () => {
 
             try {
                 const [profileRes, statsRes, gamesRes, activeGameRes] = await Promise.all([
-                    fetch(`${BACKEND_URL}/profile/me`, { credentials: "include" }),
-                    fetch(`${BACKEND_URL}/profile/me/stats`, { credentials: "include" }),
-                    fetch(`${BACKEND_URL}/profile/me/games?limit=6`, { credentials: "include" }),
-                    fetch(`${BACKEND_URL}/profile/me/active-game`, { credentials: "include" }),
+                    api.get("/profile/me"),
+                    api.get("/profile/me/stats"),
+                    api.get("/profile/me/games?limit=6"),
+                    api.get("/profile/me/active-game"),
                 ]);
 
-                if (!profileRes.ok || !statsRes.ok || !gamesRes.ok || !activeGameRes.ok) {
-                    throw new Error("Failed to load dashboard");
-                }
-
-                const profileJson = await profileRes.json();
-                const statsJson = await statsRes.json();
-                const gamesJson = await gamesRes.json();
-                const activeGameJson = await activeGameRes.json();
-
-                setProfile(profileJson.profile);
-                setStats(statsJson.stats);
-                setRecentGames(gamesJson.games ?? []);
-                setActiveGame(activeGameJson.activeGame ?? null);
+                setProfile(profileRes.data.profile);
+                setStats(statsRes.data.stats);
+                setRecentGames(gamesRes.data.games ?? []);
+                setActiveGame(activeGameRes.data.activeGame ?? null);
             } catch (fetchError) {
                 console.error(fetchError);
                 setError("We couldn't load your dashboard right now.");

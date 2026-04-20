@@ -6,6 +6,9 @@ import { useSetRecoilState } from "recoil";
 import { userAtom } from "../store/atoms/user";
 import { motion } from "framer-motion";
 import { useUser } from "../store/hooks/useUser";
+import { api } from "../lib/api";
+import { BACKEND_URL } from "../lib/config";
+import { setAuthToken } from "../lib/auth";
 
 export const Login = () => {
     const [email, setEmail] = useState("");
@@ -28,15 +31,19 @@ export const Login = () => {
         setIsLoading(true);
 
         try {
-            const response = await axios.post("http://localhost:3000/auth/login", {
+            const response = await api.post("/auth/login", {
                 email,
                 password
-            }, {
-                withCredentials: true
             });
 
             if (response.data.success) {
-                setUser(response.data.user);
+                if (response.data.token) {
+                    setAuthToken(response.data.token);
+                }
+                setUser({
+                    ...response.data.user,
+                    token: response.data.token,
+                });
                 navigate("/profile");
             }
         } catch (err: unknown) {
@@ -134,7 +141,7 @@ export const Login = () => {
                 <button
                     className="w-full flex items-center justify-center gap-3 rounded-[18px] border border-borderColor bg-black/20 py-3 text-textMain transition hover:bg-white/5"
                     onClick={() => {
-                        window.location.href = "http://localhost:3000/auth/google"
+                        window.location.href = `${BACKEND_URL}/auth/google`
                     }}
                     type="button"
                 >

@@ -1,9 +1,16 @@
 import { useEffect, useState } from "react";
-const WS_URL = "ws://localhost:8080"
+import { getAuthToken } from "../lib/auth";
+import { WS_URL } from "../lib/config";
+
 export const useSocket = () => {
     const [socket, setSocket] = useState<WebSocket | null>(null);
     useEffect(() => {
-        const ws = new WebSocket(WS_URL);
+        const token = getAuthToken();
+        if (!token) {
+            setSocket(null);
+            return;
+        }
+        const ws = new WebSocket(`${WS_URL}?token=${encodeURIComponent(token)}`);
         ws.onopen = () => {
             console.log("Connected to server");
             setSocket(ws);

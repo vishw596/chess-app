@@ -2,9 +2,10 @@ import { redirect, useNavigate } from "react-router-dom";
 import { Button } from "../components/Button";
 import { useUser } from "../store/hooks/useUser";
 import { motion } from "framer-motion";
-import axios from "axios";
-import { BACKEND_URL, userAtom } from "../store/atoms/user";
+import { userAtom } from "../store/atoms/user";
 import { useSetRecoilState } from "recoil";
+import { api } from "../lib/api";
+import { clearAuthToken } from "../lib/auth";
 
 export const Landing = () => {
     const navigate = useNavigate();
@@ -131,11 +132,10 @@ export const Landing = () => {
                 {user && (
                     <Button 
                         onClick={async() => {
-                            const res = await axios.get(`${BACKEND_URL}/auth/logout`,{
-                                withCredentials:true
-                            })
+                            const res = await api.get("/auth/logout")
                             if(res.status == 200)
                             {
+                                clearAuthToken()
                                 setUser(null)
                                 navigate("/login")
                             }else{
