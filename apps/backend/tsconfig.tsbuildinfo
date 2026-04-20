@@ -1,0 +1,1 @@
+{"root":["./src/index.ts","./src/passport.ts","./src/middleware/authmiddleware.ts","./src/routes/auth.ts","./src/routes/profile.ts"],"version":"5.8.2"}
