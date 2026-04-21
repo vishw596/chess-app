@@ -26,5 +26,11 @@ app.use("/profile", profileRouter);
 app.get("/", (req: Request, res: Response) => {
     res.send("Login failed!")
 });
+app.get("/health", (req, res) => {
+  res.status(200).json({
+    status: "ok",
+    uptime: process.uptime()
+  });
+});
 app.listen(3000,() => console.log("App is listening on PORT 3000"));
 
