@@ -39,7 +39,12 @@ console.log(process.env.DATABASE_URL);
 
 const port = Number(process.env.PORT) || 8080;
 
-const server = http.createServer();
+const server = http.createServer((req, res) => {
+  if (req.url === "/health") {
+    res.writeHead(200);
+    res.end("OK");
+  }
+});
 
 const wss = new WebSocketServer({ server });
 
