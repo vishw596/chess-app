@@ -15,9 +15,11 @@ export const GAME_ENDED = 'game_ended';
 export const EXIT_GAME = 'exit_game';
 export const GAME_NOT_FOUND = 'game_not_found';
 
-export enum Result {
-  WHITE_WINS = 'WHITE_WINS',
-  BLACK_WINS = 'BLACK_WINS',
-  DRAW = 'DRAW',
-}
+export const Result = {
+  WHITE_WINS: 'WHITE_WINS',
+  BLACK_WINS: 'BLACK_WINS',
+  DRAW: 'DRAW',
+} as const;
+
+export type Result = (typeof Result)[keyof typeof Result];
 export const GAME_TIME_MS = 10 * 60 * 1000;

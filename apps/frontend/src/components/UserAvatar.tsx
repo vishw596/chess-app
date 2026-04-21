@@ -9,17 +9,22 @@ interface UserAvatarProps {
 
 export const UserAvatar = ({ gameMetadata, self }: UserAvatarProps) => {
   const user = useUser();
-  let player: Player;
-  if (gameMetadata?.blackPlayer.id === user.id) {
+  
+  if (!user || !gameMetadata) {
+    return null;
+  }
+
+  let player: Player | undefined;
+  if (gameMetadata.blackPlayer.id === user.id) {
     player = self ? gameMetadata.blackPlayer : gameMetadata.whitePlayer;
   } else {
-    player = self ? gameMetadata?.whitePlayer! : gameMetadata?.blackPlayer!;
+    player = self ? gameMetadata.whitePlayer : gameMetadata.blackPlayer;
   }
 
   // Determine piece color based on player
   const pieceType = self ? 
-    (gameMetadata?.blackPlayer.id === user.id ? 'b' : 'w') : 
-    (gameMetadata?.blackPlayer.id === user.id ? 'w' : 'b');
+    (gameMetadata.blackPlayer.id === user.id ? 'b' : 'w') : 
+    (gameMetadata.blackPlayer.id === user.id ? 'w' : 'b');
   
   const pieceImage = `/${pieceType}k.png`; // King piece for avatar
 
